@@ -1,3 +1,4 @@
+#http://electronut.in/a-simple-python-matplotlib-implementation-of-conways-game-of-life
 
 import numpy as np
 import matplotlib.pyplot as plt 
