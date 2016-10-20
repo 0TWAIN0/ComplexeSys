@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 N = 100
-ON = 255
+ON = 1
 OFF = 0
 vals = [ON, OFF]
 
@@ -22,29 +22,28 @@ grid = np.random.choice(vals, N*N, p=[0.2, 0.8]).reshape(N, N)
 
 def update(data):
   global grid
-  # copy grid since we require 8 neighbors for calculation
-  # and we go line by line 
   newGrid = grid.copy()
-  for i in range(N):
-    for j in range(N):
-      # compute 8-neghbor sum 
-      # using toroidal boundary conditions - x and y wrap around 
-      # so that the simulaton takes place on a toroidal surface.
-      total = (grid[i, (j-1)%N] + grid[i, (j+1)%N] + 
-               grid[(i-1)%N, j] + grid[(i+1)%N, j] + 
-               grid[(i-1)%N, (j-1)%N] + grid[(i-1)%N, (j+1)%N] + 
-               grid[(i+1)%N, (j-1)%N] + grid[(i+1)%N, (j+1)%N])/ON
-      # apply Conway's rules
-      if grid[i, j]  == ON:
-        if (total < 2) or (total > 3):
-          newGrid[i, j] = OFF
-      else:
-        if total == 3:
-          newGrid[i, j] = ON
+
+  # Berechne Verschiebungen
+  grid2 = np.roll(grid, 1, axis=1)
+  grid3 = np.roll(grid2, 1, axis=1)
+
+  # Hilfsvariable
+  added = grid + grid2 + grid3
+
+  # 1+2+3 + hoch(hoch(1+2+3)) + hoch(1+3)
+  total = added + np.roll(added, -2, axis=0) + np.roll(grid + grid3, -1, axis=0) 
+  total = np.roll(total, -1, axis=1) # links
+  total = np.roll(total, 1, axis=0) # runter
+
+  newGrid[(newGrid ==  ON) & ((total < 2) | (total > 3))] = OFF;
+  newGrid[(newGrid == OFF) & (total == 3)] = ON;
+
   # update data
   mat.set_data(newGrid)
   grid = newGrid
   return [mat]
+ 
 
 # set up animation
 fig, ax = plt.subplots()
