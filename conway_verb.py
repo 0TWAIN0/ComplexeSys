@@ -1,12 +1,3 @@
-################################################################################
-# conway.py
-#
-# Author: electronut.in
-# 
-# Description:
-#
-# A simple Python/matplotlib implementation of Conway's Game of Life.
-################################################################################
 
 import numpy as np
 import matplotlib.pyplot as plt 
